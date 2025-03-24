@@ -14,7 +14,6 @@ import { useRef, useEffect, useState } from "react";
 import { ReactLenis } from "lenis/react";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "motion/react";
 import { cancelFrame, frame, useInView, useAnimate } from "framer-motion";
-// import Image from "next/image";
 import ExportedImage from "next-image-export-optimizer";
 import Snap from "lenis/snap";
 
@@ -59,9 +58,6 @@ export default function Home() {
       [...containerRef.current?.children].forEach((el, i) => {
         snap.addElement(el, { align: aligns[i] });
       });
-      // [...containerRef.current?.children].forEach((s) => {
-      //   snap.addElement(s.offsetTop);
-      // });
 
       return () => {
         snap.remove();
@@ -276,7 +272,6 @@ export default function Home() {
             >
               Wakayama awaits
             </motion.div>
-            {/* <div className={s.topVideoText}> Tanabe awaits</div> */}
             <motion.div
               className={s.topVideoSubText}
               initial={{ opacity: 0 }}
@@ -285,7 +280,6 @@ export default function Home() {
             >
               16/8°C afternoon clouds
             </motion.div>
-            {/* <div className={s.topVideoSubText}>16/8°C afternoon clouds</div> */}
           </div>
         </motion.div>
         {/* end */}
@@ -319,16 +313,6 @@ export default function Home() {
                       // transition={{ duration: 1, ease: "easeOut", delay: 1 }}
                     />
                   </clipPath>
-                  {/* <clipPath id="clipPath2">
-                    <motion.rect
-                      className="wakayamaInfoRect2"
-                      height="500"
-                      width="500"
-                      initial={{ x: 0 }}
-                      whileInView={{ x: 300 }}
-                      // transition={{ ease: "easeOut", duration: 1, ease: "easeOut", delay: 1 }}
-                    />
-                  </clipPath> */}
                   <clipPath id="clipPath3">
                     <motion.rect
                       className="wakayamaInfoRect3"
@@ -603,7 +587,6 @@ export default function Home() {
 
             <div className={s.citysInfoRight}>
               <Wakayama {...{ city, updateCity }} />
-              {/* <img src="./tmp-second-panel.jpg" className={s.tmp} /> */}
             </div>
           </div>
         </div>
