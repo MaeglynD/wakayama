@@ -1,7 +1,7 @@
 "use client";
 
 import s from "./page.module.css";
-import data from "./data_tmp.js";
+import data from "./data.js";
 import Japan from "./japan.js";
 import Wakayama from "./wakayama.js";
 import WakayamaEmblem from "./wakayamaEmblem.js";
