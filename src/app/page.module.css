@@ -3,8 +3,8 @@
   width: 100%;
   overflow: hidden;
 
-  --clamped-title: clamp(50px, 4.8vw, 100px);
-  --clamped-text: clamp(16px, 1.15vw, 24px);
+  --clamped-title: clamp(50px, 4vw, 100px);
+  --clamped-text: clamp(16px, 1vw, 24px);
 
   --clamped-title-alt: clamp(30px, 4.8vw, 100px);
   --clamped-text-alt: clamp(11px, 1vw, 24px);
@@ -140,13 +140,16 @@
 }
 
 .wakayamaInfoTextContainer{
-  z-index: 2;
-  max-width: 800px;
-  width: 38vw;
-  min-width: 500px;
-  position: relative;
-  padding-right: 30px;
-  text-shadow: 0 0 44px rgb(203 163 161);
+    z-index: 2;
+    max-width: 800px;
+    width: 38vw;
+    min-width: 500px;
+    position: relative;
+    padding-right: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-shadow: 0 0 44px #cba3a1;
 }
 
 .wakayamaInfoText{
@@ -186,12 +189,10 @@
 }
 
 .wakayamaInfoJapanSvg{
-  position: absolute;
-  top: -84px;
-  right: calc(100% - 50px);
-  width: 40vw;
-  min-width: 600px;
-  max-width: 900px;
+    position: absolute;
+    top: 0%;
+    right: 83%;
+    width: 110%;
 }
 /* end */
 
@@ -203,7 +204,7 @@
 
 .citysInfo{
   width: 100%;
-  position: relative;
+  /* position: relative; */
   /* min-height: 100vh; */
   /* height: max-content; */
   height: 100vh;
@@ -217,6 +218,8 @@
   width: 100%;
   position: relative;
 }
+
+
 
 .citysInfoLeft{
   width: 70%;
@@ -392,7 +395,6 @@
 
 .phones{
   flex-direction: row-reverse;
-  gap: 30px;
   padding-top: 60px;
   justify-content: center;
   cursor: grab;
@@ -402,8 +404,8 @@
 }
 
 .phoneContainer{
-  width: 8vw;
-  max-width: 130px;
+  width: 100%;
+  max-width: 120px;
 }
 
 .phone{
@@ -411,7 +413,7 @@
   width: 100%;
   border: 4px solid rgba(0,0,0,0.7);
   border-radius: 20px;
-  aspect-ratio: 1080 / 1920;
+  aspect-ratio: 0.57;
   overflow: hidden;
   position: relative;
 }
@@ -523,7 +525,8 @@
   margin: auto;
   z-index: 1;
   /* top: 21%; */
-  top: 17%
+  /* top: 17% */
+  top: 26.5%
 }
 
 .discoverTitle, .discoverSubTitle{
@@ -532,13 +535,12 @@
 
 .discoverTitle{
   font-family: var(--font-seasons);
-  font-size: clamp(50px, 10vw, 130px);
+  font-size: 8vw;
 }
 
 .discoverSubTitle{
   font-family: var(--font-yu);
-  font-size: 1.95vw;
-      font-size: clamp(10px, 1.95vw, 25px);
+  font-size: 1.4vw;
 }
 
 .discoverPicture{
@@ -586,6 +588,19 @@
   gap: 60px;
   opacity: 0.9;
   align-items: center;
+  cursor: pointer;
+}
+
+.footerButton:hover .footerButtonArrowContainer{
+  background:rgba(255, 255, 255, 0.3);
+}
+
+.footerButton:hover .footerButtonTextContainer{
+  text-shadow: 0 0 10px #cba3a1;
+}
+
+.footerButtonTextContainer{
+  transition: 0.5s;
 }
 
 .footerButtonText{
@@ -611,6 +626,7 @@
   align-items: center;
   border: 1px solid white;
   border-radius: 50%;
+    transition: 0.2s;
 }
 
 .footerButtonArrowContainer .arrow{
@@ -642,3 +658,20 @@
   }
 }
 /* end */
+
+@media (height < 900px){
+  .citysInfoInner, .wakayamaInfoLightBg, .discover{
+    zoom: 0.8;
+  }
+  .phoneContainer{
+    max-width: 110px;
+  }
+
+  .discoverTitle{
+    font-size: clamp(50px, 10vw, 130px);
+  }
+
+  .discoverSubTitle{
+    font-size: clamp(10px, 1.95vw, 25px);
+  }
+}

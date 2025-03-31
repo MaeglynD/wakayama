@@ -10,9 +10,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { ReactLenis } from "lenis/react";
-import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "motion/react";
+import { motion, useScroll, useMotionValueEvent, AnimatePresence, useTransform } from "motion/react";
 import { cancelFrame, frame, useInView, useAnimate } from "framer-motion";
 import ExportedImage from "next-image-export-optimizer";
 import Snap from "lenis/snap";
@@ -24,6 +24,29 @@ export default function Home() {
   const [videosLoaded, setVideosLoaded] = useState(true);
   const [scopeWakayamaInfo, animateWakayamaInfo] = useAnimate();
   const isInViewWakayamaInfo = useInView(scopeWakayamaInfo, { margin: "0px 0px -40% 0px" });
+
+  const discoverRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: discoverRef,
+    offset: ["start end", "end start"],
+  });
+
+  const transform = useCallback((value) => {
+    return value * window.innerHeight * 0.5;
+  }, []);
+
+  const leftColumnY = useTransform(scrollYProgress, [0, 1], [0, -500], {
+    clamp: false,
+    transformer: transform,
+  });
+  const centerColumnY = useTransform(scrollYProgress, [0, 1], [0, 700], {
+    clamp: false,
+    transformer: transform,
+  });
+  const rightColumnY = useTransform(scrollYProgress, [0, 1], [0, -150], {
+    clamp: false,
+    transformer: transform,
+  });
 
   // Framer / lenis setup
   useEffect(() => {
@@ -39,135 +62,34 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    let timeout = setTimeout(() => {
-      const lenis = lenisRef.current?.lenis;
+  // useEffect(() => {
+  //   let timeout = setTimeout(() => {
+  //     const lenis = lenisRef.current?.lenis;
 
-      if (!lenis) return;
+  //     if (!lenis) return;
 
-      const snap = new Snap(lenis, {
-        type: "proximity",
-        debounce: 0.3,
-        duration: 1,
-        easing: (t) => t * (2 - t),
-        velocityThreshold: 0.1,
-      });
+  //     const snap = new Snap(lenis, {
+  //       type: "proximity",
+  //       debounce: 0.3,
+  //       duration: 1,
+  //       easing: (t) => t * (2 - t),
+  //       velocityThreshold: 0.1,
+  //     });
 
-      const aligns = ["center", "center", "center", "start", "end"];
+  //     const aligns = ["center", "center", "center", "start", "end"];
 
-      [...containerRef.current?.children].forEach((el, i) => {
-        snap.addElement(el, { align: aligns[i] });
-      });
+  //     [...containerRef.current?.children].forEach((el, i) => {
+  //       snap.addElement(el, { align: aligns[i] });
+  //     });
 
-      return () => {
-        snap.remove();
-      };
-    }, 1000);
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, []);
-
-  // 2nd panel
-  useEffect(() => {
-    const lightBg = `.${s.wakayamaInfoLightBg}`;
-
-    const rect1 = ".wakayamaInfoRect1";
-    const rect3 = ".wakayamaInfoRect3";
-
-    const path1 = ".wakayamaInfoPath1";
-    const path2 = ".wakayamaInfoPath2";
-    const path3 = ".wakayamaInfoPath3";
-
-    const kanji = `.${s.wakayamaInfoSubTitle}`;
-    const title = `.${s.wakayamaInfoTitle}`;
-
-    const desc = `.${s.wakayamaInfoText}`;
-    const learnmore = `.${s.wakayamaInfoLink}`;
-    const arrow = ".wakayamaInfoArrow";
-
-    const picture = `.${s.wakayamaInfoPicture}`;
-    const japan = `.${s.wakayamaInfoJapanSvg}`;
-
-    if (isInViewWakayamaInfo) {
-      (async () => {
-        await animateWakayamaInfo(lightBg, { opacity: 1, width: "85%" }, { ease: "easeOut", duration: 1 });
-
-        animateWakayamaInfo(rect1, { x: 300 }, { name: "easeOut", duration: 1, ease: "easeOut", delay: 0.1 });
-        animateWakayamaInfo(rect3, { y: 0 }, { duration: 2, ease: "easeInOut", delay: 0.1 });
-
-        animateWakayamaInfo(path1, { opacity: 1, clipPath: "url('#clipPath')" });
-        animateWakayamaInfo(path2, { opacity: 1, clipPath: "url('#clipPath3')" });
-        animateWakayamaInfo(path3, { opacity: 1, clipPath: "url('#clipPath3')" });
-
-        animateWakayamaInfo(
-          kanji,
-          { opacity: 1, clipPath: "inset(0 0% 0 0)", mixBlendMode: "none" },
-          { duration: 4, delay: 1 }
-        );
-
-        animateWakayamaInfo(title, { opacity: 1 }, { duration: 2, delay: 1 });
-
-        animateWakayamaInfo(desc, { opacity: 1 }, { duration: 4, delay: 1 });
-
-        // await animateWakayamaInfo(learnmore, {})
-        // await animateWakayamaInfo(arrow, {})
-
-        animateWakayamaInfo(
-          picture,
-          { opacity: 0.9, scale: 1, filter: "url(#turb)" },
-          {
-            duration: 6,
-            ease: "easeInOut",
-            opacity: { duration: 4.5, ease: "easeOut" },
-            scale: { duration: 6, ease: [0.25, 0.3, 0.5, 1] },
-            delay: 3,
-            filter: { duration: 10, ease: [0.25, 0.3, 0.5, 1] },
-          }
-        );
-
-        animateWakayamaInfo(
-          japan,
-          { opacity: 1, clipPath: "inset(0 0% 0 0)", mixBlendMode: "none" },
-          { duration: 1.5, delay: 2 }
-        );
-      })();
-    } else {
-      // (async () => {
-      // animateWakayamaInfo(lightBg, { opacity: 0, width: "0" }, { ease: "easeOut", duration: 1 });
-      // animateWakayamaInfo(rect1, { x: 300 }, { duration: 1, ease: "easeOut" });
-      // animateWakayamaInfo(rect2, { x: 0 }, { name: "easeOut", duration: 1, ease: "easeOut" });
-      // animateWakayamaInfo(rect3, { y: 300 }, { duration: 1, ease: "easeInOut" });
-      // animateWakayamaInfo(path1, { opacity: 0, clipPath: "none" });
-      // animateWakayamaInfo(path2, { opacity: 0, clipPath: "none" });
-      // animateWakayamaInfo(path3, { opacity: 0, clipPath: "none" });
-      // animateWakayamaInfo(
-      //   kanji,
-      //   { opacity: 0, clipPath: "inset(0 100% 0 0)", mixBlendMode: "overlay" },
-      //   { duration: 1 }
-      // );
-      // animateWakayamaInfo(title, { opacity: 0 }, { duration: 1 });
-      // animateWakayamaInfo(desc, { opacity: 0 }, { duration: 1 });
-      // // await animateWakayamaInfo(learnmore, {})
-      // // await animateWakayamaInfo(arrow, {})
-      // animateWakayamaInfo(
-      //   picture,
-      //   { opacity: 0, scale: 1.2, padding: 0 },
-      //   {
-      //     duration: 1,
-      //     ease: "easeInOut",
-      //     opacity: { duration: 1, ease: "easeOut" },
-      //     scale: { duration: 1, ease: [0.25, 0.3, 0.5, 1] },
-      //   }
-      // );
-      // animateWakayamaInfo(
-      //   japan,
-      //   { opacity: 0, clipPath: "inset(0 100% 0 0)", mixBlendMode: "overlay" },
-      //   { duration: 0.5 }
-      // );
-      // })();
-    }
-  }, [isInViewWakayamaInfo]);
+  //     return () => {
+  //       snap.remove();
+  //     };
+  //   }, 1000);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  // }, []);
 
   const updateCity = (newCity) => {
     setVideosLoaded(false);
@@ -306,10 +228,10 @@ export default function Home() {
                       className="wakayamaInfoRect1"
                       height="500"
                       width="500"
-                      initial={{ x: 300 }}
+                      // initial={{ x: 300 }}
                       // whileInView={{ x: 0 }}
-                      whileInView={{ x: 0 }}
-                      transition={{ duration: 2, ease: "easeInOut", delay: 1 }}
+                      // whileInView={{ x: 0 }}
+                      // transition={{ duration: 2, ease: "easeInOut", delay: 1 }}
                       // transition={{ duration: 1, ease: "easeOut", delay: 1 }}
                     />
                   </clipPath>
@@ -318,9 +240,9 @@ export default function Home() {
                       className="wakayamaInfoRect3"
                       height="500"
                       width="500"
-                      initial={{ y: 300 }}
-                      whileInView={{ y: 0 }}
-                      transition={{ duration: 2, ease: "easeInOut", delay: 1 }}
+                      // initial={{ y: 300 }}
+                      // whileInView={{ y: 0 }}
+                      // transition={{ duration: 2, ease: "easeInOut", delay: 1 }}
                     />
                   </clipPath>
                 </defs>
@@ -329,6 +251,7 @@ export default function Home() {
                   d="M60.3741 68.2752C30.2738 68.2752 5.88278 92.6663 5.88275 122.767V125.077C5.88275 137.665 26.6755 137.99 26.6755 125.077V122.767C26.6755 104.109 41.7169 88.9883 60.3741 88.9883C75.5331 88.9883 88.3625 98.978 92.6387 112.729L93.5947 115.915C100.735 148.727 129.945 172 164.896 172C205.195 172 237.949 140.6 237.949 100.301V85.244C237.949 73.4112 219.068 73.9753 219.068 85.244L219.467 97.9905C219.467 128.091 194.996 152.562 164.896 152.562C140.987 152.562 120.694 137.112 113.352 115.676L111.281 109.383C105.765 85.7498 85.8607 68.2752 60.3741 68.2752Z"
                   className="wakayamaInfoPath1"
                   clipPath="url(#clipPath)"
+                  viewport={{ once: true }}
                   initial={{ opacity: 0, clipPath: "none" }}
                   // whileInView={{ opacity: 1, clipPath: "url('#clipPath')" }}
                 />
@@ -337,6 +260,7 @@ export default function Home() {
                   className="wakayamaInfoPath2"
                   clipPath="url(#clipPath3)"
                   initial={{ opacity: 0, clipPath: "none" }}
+                  viewport={{ once: true }}
                   // whileInView={{ opacity: 1, clipPath: "url('#clipPath3')" }}
                 />
                 <motion.path
@@ -344,36 +268,44 @@ export default function Home() {
                   className="wakayamaInfoPath3"
                   clipPath="url(#clipPath3)"
                   initial={{ opacity: 0, clipPath: "none" }}
+                  viewport={{ once: true }}
                   // whileInView={{ opacity: 1, clipPath: "url('#clipPath3')" }}
                 />
               </svg>
             </div>
 
-            <div className={s.wakayamaInfoTextContainer}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              viewport={{ once: true }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 3 }}
+              className={s.wakayamaInfoTextContainer}
+            >
               <motion.div
                 className={s.wakayamaInfoSubTitle}
-                initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)", mixBlendMode: "overlay" }}
-                // whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)", mixBlendMode: "none" }}
-                // transition={{ duration: 4, delay: 2 }}
+                // initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                // viewport={{ once: true }}
+                // whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
+                // transition={{ duration: 3 }}
               >
                 和歌山県
               </motion.div>
               {/* <div className={s.wakayamaInfoSubTitle}>和歌山県</div> */}
               <motion.div
-                initial={{ opacity: 0 }}
-                // whileInView={{ opacity: 1 }}
+                // initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                // whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)" }}
                 // viewport={{ once: true }}
-                // transition={{ duration: 2, delay: 2 }}
+                // transition={{ duration: 4 }}
                 className={s.wakayamaInfoTitle}
               >
                 Wakayama
               </motion.div>
               {/* <div className={s.wakayamaInfoTitle}>Wakayama</div> */}
               <motion.div
-                initial={{ opacity: 0 }}
+                // initial={{ opacity: 0 }}
                 // whileInView={{ opacity: 1 }}
                 // viewport={{ once: true }}
-                // transition={{ duration: 4, delay: 2 }}
+                // transition={{ duration: 2, delay: 2 }}
                 className={s.wakayamaInfoText}
               >
                 {data.mainDescription}
@@ -382,31 +314,41 @@ export default function Home() {
                   <Arrow className="wakayamaInfoArrow" />
                 </a>
 
-                <ExportedImage
-                  initial={{ opacity: 0, scale: 1.2, padding: 0 }}
-                  // whileInView={{ opacity: 1, scale: 1, filter: "url(#turb)" }}
-                  // viewport={{ once: true }}
-                  // transition={{
-                  //   duration: 6,
-                  //   ease: "easeInOut",
-                  //   opacity: { duration: 4.5, ease: "easeOut" },
-                  //   scale: { duration: 6, ease: [0.25, 0.3, 0.5, 1] },
-                  //   delay: 3,
-                  // }}
-                  src="images/castle.png"
-                  height={500}
-                  width={300}
-                  alt="castle"
-                  className={s.wakayamaInfoPicture}
-                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{
+                    opacity: { duration: 2.5, ease: "easeInOut", delay: 1 },
+                    // scale: { duration: 6, ease: [0.25, 0.3, 0.5, 1] },
+                  }}
+                >
+                  <ExportedImage
+                    // whileInView={{ opacity: 1, scale: 1, filter: "url(#turb)" }}
+                    // viewport={{ once: true }}
+                    // transition={{
+                    //   duration: 6,
+                    //   ease: "easeInOut",
+                    //   opacity: { duration: 4.5, ease: "easeOut" },
+                    //   scale: { duration: 6, ease: [0.25, 0.3, 0.5, 1] },
+                    //   delay: 3,
+                    // }}
+                    src="images/castle.png"
+                    height={500}
+                    width={300}
+                    alt="castle"
+                    priority={true}
+                    className={s.wakayamaInfoPicture}
+                  />
+                </motion.div>
               </motion.div>
 
               {/* <Japan /> */}
               <motion.svg
                 initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)", mixBlendMode: "overlay" }}
-                // whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)", mixBlendMode: "none" }}
-                // viewport={{ once: true }}
-                // transition={{ duration: 1.5, delay: 2 }}
+                whileInView={{ opacity: 1, clipPath: "inset(0 0% 0 0)", mixBlendMode: "none" }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, delay: 1 }}
                 className={s.wakayamaInfoJapanSvg}
                 viewBox="0 0 421 440"
                 fill="none"
@@ -416,7 +358,7 @@ export default function Home() {
               </motion.svg>
 
               {/* <img src="./japan.svg" className={s.wakayamaInfoJapanSvg} /> */}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
         {/* end */}
@@ -427,13 +369,13 @@ export default function Home() {
             <div className={s.citysImgContainer}>
               <AnimatePresence mode="wait">
                 <motion.div
-                  exit={{ opacity: 0, filter: "blur(30px)" }}
+                  exit={{ opacity: 0, filter: "blur(30px)", duration: 1, transition: { duration: 0.5 } }}
                   initial={{ opacity: 0, filter: "blur(30px)" }}
-                  animate={{ opacity: 1, filter: "blur(0)" }}
-                  whileInView={{ opacity: 1, filter: "blur(0)" }}
+                  animate={{ opacity: 1, filter: "blur(0)", duration: 3, transition: { duration: 2, delay: 0.8 } }}
+                  // whileInView={{ opacity: 1, filter: "blur(0)" }}
                   key={`${city.name}-picture-container`}
                   className={s.citysImgContainerInner}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 1 }}
                 >
                   <div className={s.citysImgBackdrops}>
                     <div className={s.citysImgBackdropBlack} />
@@ -458,7 +400,8 @@ export default function Home() {
                     alt={`${city.name}`}
                     src={`images/prefecture/${city.name}/0.jpg`}
                     className={s.citysImg}
-                    placeholder="blur"
+                    // placeholder="blur"
+                    placeholder="empty"
                     priority={true}
                   />
                   {/* </motion.div> */}
@@ -468,25 +411,39 @@ export default function Home() {
 
             <AnimatePresence mode="wait">
               <motion.div key={`${city.name}-info-container`} className={s.citysInfoLeft}>
-                <div className={s.citysInfoTextContainer}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { duration: 3, delay: 0 } }}
+                  exit={{ opacity: 0 }}
+                  key={`${city.name}-info-container`}
+                  className={s.citysInfoTextContainer}
+                >
                   <motion.div
-                    key={`${city.name}-kanji`}
-                    initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
-                    animate={{ opacity: 0.46, clipPath: "inset(0 0% 0 0)", transition: { duration: 1, delay: 1 } }}
-                    exit={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                    // key={`${city.name}-kanji`}
+                    // initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                    // animate={{ opacity: 0.46, clipPath: "inset(0 0% 0 0)", transition: { duration: 1, delay: 1 } }}
+                    // exit={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+
+                    // initial={{ opacity: 0 }}
+                    // animate={{ opacity: 0.46, transition: { duration: 1, delay: 1 } }}
+                    // exit={{ opacity: 0 }}
                     className={s.citysInfoSubTitle}
                     style={{ width: "fit-content" }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    // transition={{ duration: 1, ease: "easeOut" }}
                   >
                     {city.kanji}
                   </motion.div>
                   <motion.div
-                    initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
-                    animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)", transition: { duration: 1.2, delay: 0 } }}
-                    exit={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
-                    key={`${city.name}-title`}
+                    // initial={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+                    // animate={{ opacity: 1, clipPath: "inset(0 0% 0 0)", transition: { duration: 1.2, delay: 0 } }}
+                    // exit={{ opacity: 0, clipPath: "inset(0 100% 0 0)" }}
+
+                    // initial={{ opacity: 0 }}
+                    // animate={{ opacity: 1, transition: { duration: 1.2, delay: 0 } }}
+                    // exit={{ opacity: 0 }}
+                    // key={`${city.name}-title`}
                     className={s.citysInfoTitle}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    // transition={{ duration: 0.5, ease: "easeOut" }}
                   >
                     <div className={s.citysInfoEmblem}>
                       {/* <ExportedImage
@@ -501,12 +458,12 @@ export default function Home() {
                     {city.name}
                   </motion.div>
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1, transition: { duration: 2, delay: 0.5 } }}
-                    exit={{ opacity: 0 }}
-                    key={`${city.name}-desc`}
+                    // initial={{ opacity: 0 }}
+                    // animate={{ opacity: 1, transition: { duration: 2, delay: 0.5 } }}
+                    // exit={{ opacity: 0 }}
+                    // key={`${city.name}-desc`}
                     className={s.citysInfoText}
-                    transition={{ ease: "easeOut" }}
+                    // transition={{ ease: "easeOut" }}
                   >
                     {/* {data.locations[1].description} */}
                     {city.description}
@@ -525,7 +482,6 @@ export default function Home() {
                   >
                     <Swiper
                       slidesPerView={5}
-                      spaceBetween={"1vw"}
                       loop={true}
                       pagination={{
                         clickable: true,
@@ -539,7 +495,7 @@ export default function Home() {
                         <SwiperSlide key={`${idx}-${i}`}>
                           <motion.div
                             initial={{ opacity: 0 }}
-                            animate={{ opacity: 1, transition: { delay: 2 + i * 0.1 } }}
+                            animate={{ opacity: 1, transition: { delay: 3 + i * 0.1 } }}
                             exit={{ opacity: 0, transition: { delay: 0.05 * (city.videos.length - i) } }}
                             transition={{ duration: 1 }}
                             key={`${city.name}-phone-${i}`}
@@ -581,7 +537,7 @@ export default function Home() {
                       ))}
                     </Swiper>
                   </motion.div>
-                </div>
+                </motion.div>
               </motion.div>
             </AnimatePresence>
 
@@ -593,10 +549,16 @@ export default function Home() {
         {/* end */}
 
         {/* discover */}
-        <div className={s.discover}>
+        <div className={s.discover} ref={discoverRef}>
           <div className={s.discoverInnerContainer}>
             <div className={s.discoverInner}>
-              <div className={s.discoverLeft}>
+              <motion.div
+                className={s.discoverLeft}
+                style={{
+                  y: leftColumnY,
+                  willChange: "transform",
+                }}
+              >
                 {Array.from({ length: 3 }).map((x, i) => (
                   <ExportedImage
                     key={`left-img-${i}`}
@@ -605,11 +567,19 @@ export default function Home() {
                     alt={`Discover wakayama picture`}
                     src={`images/discover/left/${i}.jpg`}
                     className={s.discoverPicture}
+                    placeholder="blur"
+                    priority={true}
                   />
                 ))}
-              </div>
+              </motion.div>
 
-              <div className={s.discoverCenter}>
+              <motion.div
+                className={s.discoverCenter}
+                style={{
+                  y: centerColumnY,
+                  willChange: "transform",
+                }}
+              >
                 <div className={s.discoverTextContainer}>
                   <div className={s.discoverTitle}>Discover</div>
                   <div className={s.discoverSubTitle}>私たちが尊重する3つのこと</div>
@@ -622,23 +592,33 @@ export default function Home() {
                     width={700}
                     alt={`Discover wakayama picture`}
                     src={`images/discover/center/${i}.jpg`}
+                    placeholder="blur"
+                    priority={true}
                     className={s.discoverPicture}
                   />
                 ))}
-              </div>
+              </motion.div>
 
-              <div className={s.discoverRight}>
+              <motion.div
+                className={s.discoverRight}
+                style={{
+                  y: rightColumnY,
+                  willChange: "transform",
+                }}
+              >
                 {Array.from({ length: 3 }).map((x, i) => (
                   <ExportedImage
                     key={`right-img-${i}`}
                     height={565}
                     width={500}
+                    placeholder="blur"
+                    priority={true}
                     alt={`Discover wakayama picture`}
                     src={`images/discover/right/${i}.jpg`}
                     className={s.discoverPicture}
                   />
                 ))}
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
